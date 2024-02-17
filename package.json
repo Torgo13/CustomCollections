@@ -6,7 +6,6 @@
   "unityRelease": "15f1",
   "dependencies": {
     "com.unity.burst": "1.8.4",
-    "com.unity.modules.unityanalytics": "1.0.0",
     "com.unity.nuget.mono-cecil": "1.11.4"
   },
   "description": "A C# collections library providing data structures that can be used in jobs, and optimized by Burst compiler.",

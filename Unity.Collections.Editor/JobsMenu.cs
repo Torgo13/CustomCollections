@@ -53,9 +53,6 @@ class JobsMenu
                     SetLeakDetection(newLeakDetectionMode);
                 }
 
-                if (madeChange)
-                    Telemetry.LogMenuPreferences(new Telemetry.MenuPreferencesEvent { useJobsThreads = newUseJobsDebugger, enableJobsDebugger = newUseJobsDebugger, nativeLeakDetectionMode = newLeakDetectionMode });
-
                 GUILayout.EndVertical();
                 EditorGUILayout.EndVertical();
 
