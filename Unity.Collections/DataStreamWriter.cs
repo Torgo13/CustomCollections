@@ -304,13 +304,26 @@ namespace Unity.Collections
         }
 
         /// <summary>
-        /// Copy NativeArray of bytes into the writers data buffer.
+        /// Copy NativeArray of bytes into the writer's data buffer.
         /// </summary>
         /// <param name="value">Source byte array</param>
         /// <returns>Whether the write was successful</returns>
         public bool WriteBytes(NativeArray<byte> value)
         {
             return WriteBytesInternal((byte*)value.GetUnsafeReadOnlyPtr(), value.Length);
+        }
+
+        /// <summary>
+        /// Copy <c>Span</c> of bytes into the writer's data buffer.
+        /// </summary>
+        /// <param name="value">Source byte span</param>
+        /// <returns>Whether the write was successful</returns>
+        public bool WriteBytes(Span<byte> value)
+        {
+            fixed (byte* data = value)
+            {
+                return WriteBytesInternal(data, value.Length);
+            }
         }
 
         /// <summary>

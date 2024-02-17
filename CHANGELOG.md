@@ -1,13 +1,89 @@
 # Changelog
 
-## [2.1.4] - 2023-04-25
+## [2.4.0-pre.2] - 2023-11-28
 
 ### Changed
-* Updated test-framework to 1.1.33
+
+* Updated Burst dependency to 1.8.10
+* Add lightweight spinlock to secure multithread write access to the `ChildSafetyHandles` in custom allocator framework.
+
+
+## [2.4.0-exp.2] - 2023-11-09
+
+### Added
+
+* `DataStreamReader.ReadBytes` and `DataStreamWriter.WriteBytes` now have a variant that takes a `Span<byte>` as a parameter, making it easier to use these APIs with regular `byte[]` arrays.
+
+### Changed
+
+* The minimum supported editor version is now 2022.3.11f1
+
+### Deprecated
+
+
+### Removed
+
+
+### Fixed
+
+
+### Security
+
+
+## [2.3.0-pre.3] - 2023-10-17
+
+### Changed
+
+* Updated version for release preparation.
+
+
+## [2.3.0-exp.1] - 2023-09-18
+
+### Added
+
+* Added a new `GetUnsafeReadOnlyPtr` method to `DataStreamReader`. This can be used as an escape hatch if access to the underlying buffer of the stream reader is required.
+
+### Fixed
+
+* A previous release did not allow `unsafeList.RemoveRange(unsafeList.Length, 0)` anymore, which could cause failures in many common algorithms. This has been fixed.
+* Made `SortJob.SegmentSort`, and `SortJob.SegmentSortMerge` public to allow generic job type registration.
+* `UnsafeList.RemoveAtSwapBack` could read invalid memory when the last element of the list is removed
+* Data elements in FixedList<T, U> now respect natural alignment for the type T
+
+
+## [2.2.1] - 2023-09-11
+
+### Changed
+
+* Updated Burst dependency to version 1.8.8
+
+### Fixed
+
+* Previously the `Sort` extension for NativeContainers could access memory out of bounds of the container when an invalid `IComparer<T>` was implemented for `T`: Comparers must return three states (<0, 0, >0). Sort will now no longer access invalid memory and when running with collection checks enabled (e.g. always on in Editor) or using `UNITY_DOTS_DEBUG` in player builds, an additional check at the beginning of the sort will validate the comparer is implemented correctly and inform users otherwise.
+
+### Added
+
+* Added a dependency on the com.unity.test-framework.performance package
+
+
+## [2.2.0] - 2023-06-20
+
+
+### Changed
+* Made `SegmentSort` and `SegmentSortMerge` public to allow generic job type registration.
+
+
+### Fixed
+
+* Previously it was possible to change the length of a `NativeList` via the `Length` property setter while the NativeList is being used inside of a job without an InvalidOperationExcpetion being thrown for the unsafe access.
+
+
+## [2.1.4] - 2023-04-25
 
 ### Removed
 
 * Dependency on com.unity.test-framework.performance
+* Dependency on com.unity.test-framework
 
 
 ## [2.1.1] - 2023-04-12
@@ -37,6 +113,7 @@
 * Dispose(JobHandle) for many native containers adhere to proper safety system expectations
 * Lowered benchmark memory usage in non-desktop player builds to avoid out-of-memory failures
 * Fixed container types could provide unaligned access to `T` elements which could violate platform alignment requirements resulting in native exceptions / crashes in player builds. All fixed types like `FixedList<T>` now provide 8 byte alignment for the `FixedList<T>` type itself, whereas the elements `T` remain naturally aligned in the contiguous storage buffer inside `FixedList<T>`
+
 
 
 ## [2.1.0-pre.18] - 2023-03-21
@@ -70,7 +147,6 @@
 * All HashMap and HashSet types are now consistently initialized with a capacity no less than the `minGrowth` specified
 * Incorrect markdown syntax for header anchors
 * `UnsafeAppendBuffer` now safely reads and writes type `T`. Previously, it was possible to make unaligned reads and writes of type `T` which could violate platform architecture alignment requirements.
-
 
 ## [2.1.0-pre.11] - 2023-02-13
 

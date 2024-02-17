@@ -125,6 +125,14 @@ internal class FixedListTests : CollectionsTestFixture
     }
 
     [Test]
+    public unsafe void FixedList32Byte_FixedBytes32Align8IsAlignedGeneric()
+    {
+        var list = new FixedList<byte,FixedBytes32Align8>();
+
+        Assert.IsTrue((((ulong)list.Buffer) & (sizeof(byte) - 1)) == 0);
+    }
+
+    [Test]
     public void FixedList32Byte_FixedBytes32Align8ToNativeArrayWorksGeneric()
     {
         var list = new FixedList<byte,FixedBytes32Align8>();
@@ -432,6 +440,14 @@ internal class FixedListTests : CollectionsTestFixture
     }
 
     [Test]
+    public unsafe void FixedList64Byte_FixedBytes64Align8IsAlignedGeneric()
+    {
+        var list = new FixedList<byte,FixedBytes64Align8>();
+
+        Assert.IsTrue((((ulong)list.Buffer) & (sizeof(byte) - 1)) == 0);
+    }
+
+    [Test]
     public void FixedList64Byte_FixedBytes64Align8ToNativeArrayWorksGeneric()
     {
         var list = new FixedList<byte,FixedBytes64Align8>();
@@ -736,6 +752,14 @@ internal class FixedListTests : CollectionsTestFixture
         var list = new FixedList128Byte_Wrapper(17, 23);
         byte* values = list.Values;
         FixedList128Byte_ReadonlyWorksFunc1(list, values);
+    }
+
+    [Test]
+    public unsafe void FixedList128Byte_FixedBytes128Align8IsAlignedGeneric()
+    {
+        var list = new FixedList<byte,FixedBytes128Align8>();
+
+        Assert.IsTrue((((ulong)list.Buffer) & (sizeof(byte) - 1)) == 0);
     }
 
     [Test]
@@ -1265,37 +1289,6 @@ internal class FixedListTests : CollectionsTestFixture
     }
 
     [Test]
-    public unsafe void FixedList32Byte_Unaligned_Read_Write()
-    {
-        int alignment = UnsafeUtility.AlignOf<byte>();
-        if(alignment == 1)
-            return;
-
-        // Create a unaligned FixedList32Bytes<byte> and ensure we can still read+write safely
-        const int buffSize = 32 * 2;
-        byte* buff = stackalloc byte[buffSize];
-        UnsafeUtility.MemSet(buff, 0xCD, buffSize);
-
-        int offset = 0;
-        while (CollectionHelper.IsAligned((ulong)buff + (ulong)offset, alignment))
-            offset++;
-        ulong unalignedBuff = (ulong)buff + (ulong)offset;
-
-        var list = (FixedList32Bytes<byte>*)(unalignedBuff);
-        list->Length = 0;
-
-        for (var i = 0; i < 30; ++i)
-            list->Add((byte)i);
-
-        for (var i = 0; i < 30; ++i)
-            Assert.AreEqual(i, list->ElementAt(i));
-
-        // Ensure we didn't write outside of our fixed list byte range
-        for(int i = UnsafeUtility.SizeOf<FixedList32Bytes<byte>>() + offset; i < buffSize; ++i)
-            Assert.AreEqual(buff[i], 0xCD);
-    }
-
-    [Test]
     public void FixedList32Byte_Sort()
     {
         var list = new FixedList32Bytes<byte>();
@@ -1573,37 +1566,6 @@ internal class FixedListTests : CollectionsTestFixture
         list.Insert(2,2);
         for(var i = 0; i < 5; ++i)
             Assert.AreEqual(i, list[i]);
-    }
-
-    [Test]
-    public unsafe void FixedList64Byte_Unaligned_Read_Write()
-    {
-        int alignment = UnsafeUtility.AlignOf<byte>();
-        if(alignment == 1)
-            return;
-
-        // Create a unaligned FixedList64Bytes<byte> and ensure we can still read+write safely
-        const int buffSize = 64 * 2;
-        byte* buff = stackalloc byte[buffSize];
-        UnsafeUtility.MemSet(buff, 0xCD, buffSize);
-
-        int offset = 0;
-        while (CollectionHelper.IsAligned((ulong)buff + (ulong)offset, alignment))
-            offset++;
-        ulong unalignedBuff = (ulong)buff + (ulong)offset;
-
-        var list = (FixedList64Bytes<byte>*)(unalignedBuff);
-        list->Length = 0;
-
-        for (var i = 0; i < 62; ++i)
-            list->Add((byte)i);
-
-        for (var i = 0; i < 62; ++i)
-            Assert.AreEqual(i, list->ElementAt(i));
-
-        // Ensure we didn't write outside of our fixed list byte range
-        for(int i = UnsafeUtility.SizeOf<FixedList64Bytes<byte>>() + offset; i < buffSize; ++i)
-            Assert.AreEqual(buff[i], 0xCD);
     }
 
     [Test]
@@ -1887,37 +1849,6 @@ internal class FixedListTests : CollectionsTestFixture
     }
 
     [Test]
-    public unsafe void FixedList128Byte_Unaligned_Read_Write()
-    {
-        int alignment = UnsafeUtility.AlignOf<byte>();
-        if(alignment == 1)
-            return;
-
-        // Create a unaligned FixedList128Bytes<byte> and ensure we can still read+write safely
-        const int buffSize = 128 * 2;
-        byte* buff = stackalloc byte[buffSize];
-        UnsafeUtility.MemSet(buff, 0xCD, buffSize);
-
-        int offset = 0;
-        while (CollectionHelper.IsAligned((ulong)buff + (ulong)offset, alignment))
-            offset++;
-        ulong unalignedBuff = (ulong)buff + (ulong)offset;
-
-        var list = (FixedList128Bytes<byte>*)(unalignedBuff);
-        list->Length = 0;
-
-        for (var i = 0; i < 126; ++i)
-            list->Add((byte)i);
-
-        for (var i = 0; i < 126; ++i)
-            Assert.AreEqual(i, list->ElementAt(i));
-
-        // Ensure we didn't write outside of our fixed list byte range
-        for(int i = UnsafeUtility.SizeOf<FixedList128Bytes<byte>>() + offset; i < buffSize; ++i)
-            Assert.AreEqual(buff[i], 0xCD);
-    }
-
-    [Test]
     public void FixedList128Byte_Sort()
     {
         var list = new FixedList128Bytes<byte>();
@@ -1976,6 +1907,14 @@ internal class FixedListTests : CollectionsTestFixture
         var list = new FixedList32Int_Wrapper(17, 23);
         int* values = list.Values;
         FixedList32Int_ReadonlyWorksFunc1(list, values);
+    }
+
+    [Test]
+    public unsafe void FixedList32Int_FixedBytes32Align8IsAlignedGeneric()
+    {
+        var list = new FixedList<int,FixedBytes32Align8>();
+
+        Assert.IsTrue((((ulong)list.Buffer) & (sizeof(int) - 1)) == 0);
     }
 
     [Test]
@@ -2286,6 +2225,14 @@ internal class FixedListTests : CollectionsTestFixture
     }
 
     [Test]
+    public unsafe void FixedList64Int_FixedBytes64Align8IsAlignedGeneric()
+    {
+        var list = new FixedList<int,FixedBytes64Align8>();
+
+        Assert.IsTrue((((ulong)list.Buffer) & (sizeof(int) - 1)) == 0);
+    }
+
+    [Test]
     public void FixedList64Int_FixedBytes64Align8ToNativeArrayWorksGeneric()
     {
         var list = new FixedList<int,FixedBytes64Align8>();
@@ -2590,6 +2537,14 @@ internal class FixedListTests : CollectionsTestFixture
         var list = new FixedList128Int_Wrapper(17, 23);
         int* values = list.Values;
         FixedList128Int_ReadonlyWorksFunc1(list, values);
+    }
+
+    [Test]
+    public unsafe void FixedList128Int_FixedBytes128Align8IsAlignedGeneric()
+    {
+        var list = new FixedList<int,FixedBytes128Align8>();
+
+        Assert.IsTrue((((ulong)list.Buffer) & (sizeof(int) - 1)) == 0);
     }
 
     [Test]
@@ -3119,37 +3074,6 @@ internal class FixedListTests : CollectionsTestFixture
     }
 
     [Test]
-    public unsafe void FixedList32Int_Unaligned_Read_Write()
-    {
-        int alignment = UnsafeUtility.AlignOf<int>();
-        if(alignment == 1)
-            return;
-
-        // Create a unaligned FixedList32Bytes<int> and ensure we can still read+write safely
-        const int buffSize = 32 * 2;
-        byte* buff = stackalloc byte[buffSize];
-        UnsafeUtility.MemSet(buff, 0xCD, buffSize);
-
-        int offset = 0;
-        while (CollectionHelper.IsAligned((ulong)buff + (ulong)offset, alignment))
-            offset++;
-        ulong unalignedBuff = (ulong)buff + (ulong)offset;
-
-        var list = (FixedList32Bytes<int>*)(unalignedBuff);
-        list->Length = 0;
-
-        for (var i = 0; i < 7; ++i)
-            list->Add((int)i);
-
-        for (var i = 0; i < 7; ++i)
-            Assert.AreEqual(i, list->ElementAt(i));
-
-        // Ensure we didn't write outside of our fixed list byte range
-        for(int i = UnsafeUtility.SizeOf<FixedList32Bytes<int>>() + offset; i < buffSize; ++i)
-            Assert.AreEqual(buff[i], 0xCD);
-    }
-
-    [Test]
     public void FixedList32Int_Sort()
     {
         var list = new FixedList32Bytes<int>();
@@ -3427,37 +3351,6 @@ internal class FixedListTests : CollectionsTestFixture
         list.Insert(2,2);
         for(var i = 0; i < 5; ++i)
             Assert.AreEqual(i, list[i]);
-    }
-
-    [Test]
-    public unsafe void FixedList64Int_Unaligned_Read_Write()
-    {
-        int alignment = UnsafeUtility.AlignOf<int>();
-        if(alignment == 1)
-            return;
-
-        // Create a unaligned FixedList64Bytes<int> and ensure we can still read+write safely
-        const int buffSize = 64 * 2;
-        byte* buff = stackalloc byte[buffSize];
-        UnsafeUtility.MemSet(buff, 0xCD, buffSize);
-
-        int offset = 0;
-        while (CollectionHelper.IsAligned((ulong)buff + (ulong)offset, alignment))
-            offset++;
-        ulong unalignedBuff = (ulong)buff + (ulong)offset;
-
-        var list = (FixedList64Bytes<int>*)(unalignedBuff);
-        list->Length = 0;
-
-        for (var i = 0; i < 15; ++i)
-            list->Add((int)i);
-
-        for (var i = 0; i < 15; ++i)
-            Assert.AreEqual(i, list->ElementAt(i));
-
-        // Ensure we didn't write outside of our fixed list byte range
-        for(int i = UnsafeUtility.SizeOf<FixedList64Bytes<int>>() + offset; i < buffSize; ++i)
-            Assert.AreEqual(buff[i], 0xCD);
     }
 
     [Test]
@@ -3741,37 +3634,6 @@ internal class FixedListTests : CollectionsTestFixture
     }
 
     [Test]
-    public unsafe void FixedList128Int_Unaligned_Read_Write()
-    {
-        int alignment = UnsafeUtility.AlignOf<int>();
-        if(alignment == 1)
-            return;
-
-        // Create a unaligned FixedList128Bytes<int> and ensure we can still read+write safely
-        const int buffSize = 128 * 2;
-        byte* buff = stackalloc byte[buffSize];
-        UnsafeUtility.MemSet(buff, 0xCD, buffSize);
-
-        int offset = 0;
-        while (CollectionHelper.IsAligned((ulong)buff + (ulong)offset, alignment))
-            offset++;
-        ulong unalignedBuff = (ulong)buff + (ulong)offset;
-
-        var list = (FixedList128Bytes<int>*)(unalignedBuff);
-        list->Length = 0;
-
-        for (var i = 0; i < 31; ++i)
-            list->Add((int)i);
-
-        for (var i = 0; i < 31; ++i)
-            Assert.AreEqual(i, list->ElementAt(i));
-
-        // Ensure we didn't write outside of our fixed list byte range
-        for(int i = UnsafeUtility.SizeOf<FixedList128Bytes<int>>() + offset; i < buffSize; ++i)
-            Assert.AreEqual(buff[i], 0xCD);
-    }
-
-    [Test]
     public void FixedList128Int_Sort()
     {
         var list = new FixedList128Bytes<int>();
@@ -3830,6 +3692,14 @@ internal class FixedListTests : CollectionsTestFixture
         var list = new FixedList32Float_Wrapper(17, 23);
         float* values = list.Values;
         FixedList32Float_ReadonlyWorksFunc1(list, values);
+    }
+
+    [Test]
+    public unsafe void FixedList32Float_FixedBytes32Align8IsAlignedGeneric()
+    {
+        var list = new FixedList<float,FixedBytes32Align8>();
+
+        Assert.IsTrue((((ulong)list.Buffer) & (sizeof(float) - 1)) == 0);
     }
 
     [Test]
@@ -4140,6 +4010,14 @@ internal class FixedListTests : CollectionsTestFixture
     }
 
     [Test]
+    public unsafe void FixedList64Float_FixedBytes64Align8IsAlignedGeneric()
+    {
+        var list = new FixedList<float,FixedBytes64Align8>();
+
+        Assert.IsTrue((((ulong)list.Buffer) & (sizeof(float) - 1)) == 0);
+    }
+
+    [Test]
     public void FixedList64Float_FixedBytes64Align8ToNativeArrayWorksGeneric()
     {
         var list = new FixedList<float,FixedBytes64Align8>();
@@ -4444,6 +4322,14 @@ internal class FixedListTests : CollectionsTestFixture
         var list = new FixedList128Float_Wrapper(17, 23);
         float* values = list.Values;
         FixedList128Float_ReadonlyWorksFunc1(list, values);
+    }
+
+    [Test]
+    public unsafe void FixedList128Float_FixedBytes128Align8IsAlignedGeneric()
+    {
+        var list = new FixedList<float,FixedBytes128Align8>();
+
+        Assert.IsTrue((((ulong)list.Buffer) & (sizeof(float) - 1)) == 0);
     }
 
     [Test]
@@ -4973,37 +4859,6 @@ internal class FixedListTests : CollectionsTestFixture
     }
 
     [Test]
-    public unsafe void FixedList32Float_Unaligned_Read_Write()
-    {
-        int alignment = UnsafeUtility.AlignOf<float>();
-        if(alignment == 1)
-            return;
-
-        // Create a unaligned FixedList32Bytes<float> and ensure we can still read+write safely
-        const int buffSize = 32 * 2;
-        byte* buff = stackalloc byte[buffSize];
-        UnsafeUtility.MemSet(buff, 0xCD, buffSize);
-
-        int offset = 0;
-        while (CollectionHelper.IsAligned((ulong)buff + (ulong)offset, alignment))
-            offset++;
-        ulong unalignedBuff = (ulong)buff + (ulong)offset;
-
-        var list = (FixedList32Bytes<float>*)(unalignedBuff);
-        list->Length = 0;
-
-        for (var i = 0; i < 7; ++i)
-            list->Add((float)i);
-
-        for (var i = 0; i < 7; ++i)
-            Assert.AreEqual(i, list->ElementAt(i));
-
-        // Ensure we didn't write outside of our fixed list byte range
-        for(int i = UnsafeUtility.SizeOf<FixedList32Bytes<float>>() + offset; i < buffSize; ++i)
-            Assert.AreEqual(buff[i], 0xCD);
-    }
-
-    [Test]
     public void FixedList32Float_Sort()
     {
         var list = new FixedList32Bytes<float>();
@@ -5282,38 +5137,7 @@ internal class FixedListTests : CollectionsTestFixture
         for(var i = 0; i < 5; ++i)
             Assert.AreEqual(i, list[i]);
     }
-
-    [Test]
-    public unsafe void FixedList64Float_Unaligned_Read_Write()
-    {
-        int alignment = UnsafeUtility.AlignOf<float>();
-        if(alignment == 1)
-            return;
-
-        // Create a unaligned FixedList64Bytes<float> and ensure we can still read+write safely
-        const int buffSize = 64 * 2;
-        byte* buff = stackalloc byte[buffSize];
-        UnsafeUtility.MemSet(buff, 0xCD, buffSize);
-
-        int offset = 0;
-        while (CollectionHelper.IsAligned((ulong)buff + (ulong)offset, alignment))
-            offset++;
-        ulong unalignedBuff = (ulong)buff + (ulong)offset;
-
-        var list = (FixedList64Bytes<float>*)(unalignedBuff);
-        list->Length = 0;
-
-        for (var i = 0; i < 15; ++i)
-            list->Add((float)i);
-
-        for (var i = 0; i < 15; ++i)
-            Assert.AreEqual(i, list->ElementAt(i));
-
-        // Ensure we didn't write outside of our fixed list byte range
-        for(int i = UnsafeUtility.SizeOf<FixedList64Bytes<float>>() + offset; i < buffSize; ++i)
-            Assert.AreEqual(buff[i], 0xCD);
-    }
-
+    
     [Test]
     public void FixedList64Float_Sort()
     {
@@ -5592,37 +5416,6 @@ internal class FixedListTests : CollectionsTestFixture
         list.Insert(2,2);
         for(var i = 0; i < 5; ++i)
             Assert.AreEqual(i, list[i]);
-    }
-
-    [Test]
-    public unsafe void FixedList128Float_Unaligned_Read_Write()
-    {
-        int alignment = UnsafeUtility.AlignOf<float>();
-        if(alignment == 1)
-            return;
-
-        // Create a unaligned FixedList128Bytes<float> and ensure we can still read+write safely
-        const int buffSize = 128 * 2;
-        byte* buff = stackalloc byte[buffSize];
-        UnsafeUtility.MemSet(buff, 0xCD, buffSize);
-
-        int offset = 0;
-        while (CollectionHelper.IsAligned((ulong)buff + (ulong)offset, alignment))
-            offset++;
-        ulong unalignedBuff = (ulong)buff + (ulong)offset;
-
-        var list = (FixedList128Bytes<float>*)(unalignedBuff);
-        list->Length = 0;
-
-        for (var i = 0; i < 31; ++i)
-            list->Add((float)i);
-
-        for (var i = 0; i < 31; ++i)
-            Assert.AreEqual(i, list->ElementAt(i));
-
-        // Ensure we didn't write outside of our fixed list byte range
-        for(int i = UnsafeUtility.SizeOf<FixedList128Bytes<float>>() + offset; i < buffSize; ++i)
-            Assert.AreEqual(buff[i], 0xCD);
     }
 
     [Test]

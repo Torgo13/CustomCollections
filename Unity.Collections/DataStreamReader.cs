@@ -56,7 +56,7 @@ namespace Unity.Collections
             public int m_FailedReads;
         }
 
-        [NativeDisableUnsafePtrRestriction] byte* m_BufferPtr;
+        [NativeDisableUnsafePtrRestriction] internal byte* m_BufferPtr;
         Context m_Context;
         int m_Length;
 #if ENABLE_UNITY_COLLECTIONS_CHECKS
@@ -151,13 +151,28 @@ namespace Unity.Collections
         }
 
         /// <summary>
-        /// Read and copy data into the given NativeArray of bytes, an error will
-        /// be logged if not enough bytes are available.
+        /// Read and copy data into the given NativeArray of bytes. An error will
+        /// be logged if not enough bytes are available to fill the array, and
+        /// <see cref="HasFailedReads"/> will then be true.
         /// </summary>
-        /// <param name="array"></param>
+        /// <param name="array">Array to copy data into.</param>
         public void ReadBytes(NativeArray<byte> array)
         {
             ReadBytesInternal((byte*)array.GetUnsafePtr(), array.Length);
+        }
+
+        /// <summary>
+        /// Read and copy data into the given <c>Span</c> of bytes. An error will
+        /// be logged if not enough bytes are available to fill the array, and
+        /// <see cref="HasFailedReads"/> will then be true.
+        /// </summary>
+        /// <param name="span">Span to copy data into.</param>
+        public void ReadBytes(Span<byte> span)
+        {
+            fixed (byte* ptr = span)
+            {
+                ReadBytesInternal(ptr, span.Length);
+            }
         }
 
         /// <summary>
@@ -781,7 +796,7 @@ namespace Unity.Collections
         }
 
         [Conditional("ENABLE_UNITY_COLLECTIONS_CHECKS")]
-        readonly void CheckRead()
+        internal readonly void CheckRead()
         {
 #if ENABLE_UNITY_COLLECTIONS_CHECKS
             AtomicSafetyHandle.CheckReadAndThrow(m_Safety);

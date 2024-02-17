@@ -118,6 +118,14 @@ internal class FixedListTests : CollectionsTestFixture
     }
 
     [Test]
+    public unsafe void <#=TYPENAME_IDENTIFIER #><#=BUFFERTYPE#>IsAlignedGeneric()
+    {
+        var list = new FixedList<<#=TYPE#>,<#=BUFFERTYPE#>>();
+
+        Assert.IsTrue((((ulong)list.Buffer) & (sizeof(<#=TYPE#>) - 1)) == 0);
+    }
+
+    [Test]
     public void <#=TYPENAME_IDENTIFIER #><#=BUFFERTYPE#>ToNativeArrayWorksGeneric()
     {
         var list = new FixedList<<#=TYPE#>,<#=BUFFERTYPE#>>();
@@ -662,37 +670,6 @@ internal class FixedListTests : CollectionsTestFixture
         list.Insert(2,2);
         for(var i = 0; i < 5; ++i)
             Assert.AreEqual(i, list[i]);
-    }
-
-    [Test]
-    public unsafe void <#=TYPENAME_IDENTIFIER #>Unaligned_Read_Write()
-    {
-        int alignment = UnsafeUtility.AlignOf<<#=TYPE #>>();
-        if(alignment == 1)
-            return;
-
-        // Create a unaligned <#=TYPENAME #> and ensure we can still read+write safely
-        const int buffSize = <#=BYTES #> * 2;
-        byte* buff = stackalloc byte[buffSize];
-        UnsafeUtility.MemSet(buff, 0xCD, buffSize);
-
-        int offset = 0;
-        while (CollectionHelper.IsAligned((ulong)buff + (ulong)offset, alignment))
-            offset++;
-        ulong unalignedBuff = (ulong)buff + (ulong)offset;
-
-        var list = (<#=TYPENAME #>*)(unalignedBuff);
-        list->Length = 0;
-
-        for (var i = 0; i < <#=EXPECTEDCAPACITY #>; ++i)
-            list->Add((<#=TYPE #>)i);
-
-        for (var i = 0; i < <#=EXPECTEDCAPACITY #>; ++i)
-            Assert.AreEqual(i, list->ElementAt(i));
-
-        // Ensure we didn't write outside of our fixed list byte range
-        for(int i = UnsafeUtility.SizeOf<<#=TYPENAME #>>() + offset; i < buffSize; ++i)
-            Assert.AreEqual(buff[i], 0xCD);
     }
 
     [Test]

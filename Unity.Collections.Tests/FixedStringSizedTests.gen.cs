@@ -19,7 +19,7 @@ using Unity.Collections.Tests;
 using UnityEngine;
 #endif
 
-namespace FixedStringTests
+namespace Unity.Collections.Tests
 {
 
 internal class FixedStringSizedTests
