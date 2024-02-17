@@ -953,7 +953,7 @@ namespace Unity.Collections.LowLevel.Unsafe
         {
             if (idx >= keyCapacity)
             {
-                throw new InvalidOperationException(string.Format("nextPtr idx {0} beyond capacity {1}", idx, keyCapacity));
+                throw new InvalidOperationException($"nextPtr idx {idx} beyond capacity {keyCapacity}");
             }
         }
 

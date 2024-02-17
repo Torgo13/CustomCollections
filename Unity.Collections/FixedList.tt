@@ -464,8 +464,8 @@ for(var size = 0; size < 5; ++size)
 {
     var BYTES = SIZES[size];
     var BUFFER_BYTES = BYTES;
-    var TYPENAME = String.Format("FixedList{0}Bytes", BYTES);
-    var OLD_TYPENAME = String.Format("FixedList{0}", BYTES);
+    var TYPENAME = $"FixedList{BYTES}Bytes";
+    var OLD_TYPENAME = $"FixedList{BYTES}";
 
 #>
     /// <summary>
@@ -481,7 +481,7 @@ for(var size = 0; size < 5; ++size)
 <#
     foreach(var OTHERBYTES in SIZES)
     {
-        var OTHERTYPENAME = String.Format("FixedList{0}Bytes", OTHERBYTES);
+        var OTHERTYPENAME = $"FixedList{OTHERBYTES}Bytes";
         WriteLine("    , IEquatable<{0}<T>>", OTHERTYPENAME);
         WriteLine("    , IComparable<{0}<T>>", OTHERTYPENAME);
     }
@@ -916,7 +916,7 @@ for(var size = 0; size < 5; ++size)
     foreach(var OTHERBYTES in SIZES)
     {
         var OTHER_BUFFER_BYTES = OTHERBYTES;
-        var OTHERTYPENAME = String.Format("FixedList{0}Bytes", OTHERBYTES);
+        var OTHERTYPENAME = $"FixedList{OTHERBYTES}Bytes";
 #>
 
         /// <summary>
@@ -1053,7 +1053,7 @@ for(var size = 0; size < 5; ++size)
 <#
     foreach(var OTHERBYTES in SIZES)
     {
-        var OTHERTYPENAME = String.Format("FixedList{0}Bytes", OTHERBYTES);
+        var OTHERTYPENAME = $"FixedList{OTHERBYTES}Bytes";
         WriteLine("            if(obj is {0}<T> a{0}) return Equals(a{0});", OTHERTYPENAME);
     }
 #>
@@ -1262,7 +1262,7 @@ for(var size = 0; size < 5; ++size)
     var TYPE = TYPES[type];
     var TYPESIZE = TYPESIZES[type];
     var BUFFER_BYTES = BYTES;
-    var TYPENAME = String.Format("FixedList{0}{1}", new CultureInfo("en-US").TextInfo.ToTitleCase(TYPE), BYTES);
+    var TYPENAME = $"FixedList{new CultureInfo("en-US").TextInfo.ToTitleCase(TYPE)}{BYTES}";
     var NEW_TYPENAME = $"FixedList{BYTES}Bytes<{TYPE}>";
 #>
 
@@ -1280,7 +1280,7 @@ for(var size = 0; size < 5; ++size)
 {
     var BYTES = SIZES[size];
     var BUFFER_BYTES = BYTES;
-    var TYPENAME = String.Format("FixedList{0}Bytes", BYTES);
+    var TYPENAME = $"FixedList{BYTES}Bytes";
 #>
 
         /// <summary>
