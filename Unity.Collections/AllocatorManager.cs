@@ -509,6 +509,7 @@ namespace Unity.Collections
                     }
                 }
                 ChildSafetyHandles.Clear();
+                ChildSafetyHandles.TrimExcess();
                 ChildSpinLock.Release();
 #endif
                 if (Parent.IsValid)
@@ -525,6 +526,7 @@ namespace Unity.Collections
                     }
                 }
                 ChildAllocators.Clear();
+                ChildSafetyHandles.TrimExcess();
             }
 
 #endif
